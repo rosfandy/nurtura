@@ -4,10 +4,10 @@ import axios from "axios";
 import Cookies from 'js-cookie';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useRouter } from 'next/navigation'; // This will be used for redirecting
+import { useRouter } from 'next/navigation'; // Corrected import for Next.js router
 import dynamic from 'next/dynamic';
 
-const CityMap = dynamic(() => import('@/app/components/Map'), {
+const CityMap = dynamic(() => import('@/app/components/MapInput'), {
     ssr: false  // Disable server-side rendering for this component
 });
 
@@ -17,7 +17,7 @@ interface DaftarLahan {
 }
 
 export default function TambahLahan() {
-    const [DaftarLahan, setDaftarLahan] = useState<DaftarLahan[] | null>(null);
+    const [daftarLahan, setDaftarLahan] = useState<DaftarLahan[] | null>(null);
     const [formData, setFormData] = useState({
         nama_lahan: '',
         deskripsi: '',
@@ -38,10 +38,6 @@ export default function TambahLahan() {
     useEffect(() => {
         fetchData();
     }, []);
-
-    useEffect(() => {
-        if (city) fetchCityCoordinates();
-    }, [city])
 
     const fetchData = async () => {
         const id_user = Cookies.get('id_user');
@@ -68,47 +64,31 @@ export default function TambahLahan() {
         }
     };
 
-    const fetchCityCoordinates = async () => {
-        try {
-            const response = await axios.get(`https://nominatim.openstreetmap.org/search?city=${city}&format=json&limit=1`);
-            if (response.data.length > 0) {
-                const { lat, lon } = response.data[0];
-                const newPos: [number, number] = [parseFloat(lat), parseFloat(lon)];
-                setLong(parseFloat(lon))
-                setLat(parseFloat(lat))
-            }
-        } catch (error) {
-            console.error('Error fetching city coordinates:', error);
-        }
-    };
-
-    const handleChange = (e: any) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prevState => ({
-            id_user: Cookies.get('id_user'),
             ...prevState,
             [name]: value,
         }));
     };
 
-    useEffect(() => {
-        setFormData(prevState => ({
-            ...prevState,
-            longitude: longitude || 0, // Menetapkan nilai default sebagai 0 jika `longitude` adalah null
-            latitude: latitude || 0,   // Menetapkan nilai default sebagai 0 jika `latitude` adalah null
-        }));
-    }, [longitude, latitude]);
-
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(formData)
+        // Consolidate form data with longitude and latitude before submission
+        const updatedFormData = {
+            ...formData,
+            longitude: longitude || 0,
+            latitude: latitude || 0
+        };
+        console.log(updatedFormData);
+
         try {
-            const response = await axios.post('/api/lahan/', formData, {
+            const response = await axios.post('/api/lahan/', updatedFormData, {
                 headers: {
                     'Authorization': `Bearer ${Cookies.get('token')}`
                 }
             });
-            console.log(response.data)
+            console.log(response.data);
             if (response.status === 200) {
                 toast.success('Penanaman berhasil ditambahkan!');
                 router.push('/main/dashboard');
@@ -132,7 +112,7 @@ export default function TambahLahan() {
                         name='nama_lahan'
                         className="w-full px-4 py-1 rounded-md border border-slate-300"
                         type="text"
-                        onChange={handleChange} // Add handleChange here
+                        onChange={handleChange}
                     />
                 </div>
                 <div className="mb-2">
@@ -140,11 +120,11 @@ export default function TambahLahan() {
                     <textarea
                         name='deskripsi'
                         className="w-full px-4 py-1 rounded-md border border-slate-300"
-                        onChange={handleChange} // Add handleChange here
+                        onChange={handleChange}
                     />
                 </div>
                 <div className="pb-2">
-                    {/* MAPS WITH INPUT KOTA */}
+                    {/* Maps Component with Input City */}
                     <div>Maps</div>
                     <div className="border-slate-300 border w-full flex items-center justify-between rounded-md">
                         <input
@@ -155,11 +135,11 @@ export default function TambahLahan() {
                             placeholder="Enter city name"
                         />
                         <div className="w-1/3 flex justify-end">
-                            <button className='rounded-md w-3/4 py-1 text-white text-sm bg-[#57B492]' onClick={handleCitySubmit} type="submit">Search</button>
+                            <button className='rounded-md w-3/4 py-1 text-white text-sm bg-[#57B492]' onClick={handleCitySubmit} type="button">Search</button>
                         </div>
                     </div>
                     <div className="pt-2">
-                        <CityMap city={city} longitude={setLong} latitude={setLat} dataLong={longitude} dataLat={latitude} />
+                        <CityMap city={city} longitude={setLong} latitude={setLat} />
                     </div>
                 </div>
                 <div className="flex gap-x-2">
@@ -171,7 +151,6 @@ export default function TambahLahan() {
                             name='longitude'
                             className="w-full px-4 py-1 rounded-md border border-slate-300"
                             type="text"
-                            onChange={handleChange} // Add handleChange here
                         />
                     </div>
                     <div className="mb-2">
@@ -182,7 +161,6 @@ export default function TambahLahan() {
                             name='latitude'
                             className="w-full px-4 py-1 rounded-md border border-slate-300"
                             type="number"
-                            onChange={handleChange} // Add handleChange here
                         />
                     </div>
                 </div>
@@ -190,7 +168,6 @@ export default function TambahLahan() {
                     <button type="submit" className="bg-[#57B492] text-white px-4 py-1 rounded-md w-full">Tambah</button>
                 </div>
             </form>
-
         </div>
     );
 }
