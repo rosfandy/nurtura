@@ -46,7 +46,7 @@ export default function BottomBar() {
     const pathname = usePathname();
 
     return (
-        <div className="fixed bottom-0 left-0 w-full  text-white text-[12px] md:px-[76vh] z-9999">
+        <div style={{ zIndex: '99' }} className="fixed bottom-0 left-0 w-full  text-white text-[12px] md:px-[76vh]">
             <div className="bg-[#57B492] flex justify-between ">
                 {navItems.map((item, index) => (
                     <div
