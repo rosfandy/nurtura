@@ -55,14 +55,14 @@ export default function DaftarPenanaman() {
                     <button className="bg-[#57B492] text-white rounded-md px-4 py-1">Tambah</button>
                 </div>
             </div>
-            <div className="bg-white shadow rounded-xl p-4">
+            <div className="bg-white shadow rounded-xl p-4 flex flex-col gap-y-6">
                 {dataPenanaman && dataPenanaman.length > 0 ? (
                     dataPenanaman.map((item, index) => (
                         <div key={index} className="flex items-center justify-between">
                             <div>{penanamanIcon}</div>
                             <div>{item.nama_penanaman}</div>
                             <div>
-                                <Link href={`/main/penanaman/detail/${item.id}`} className="bg-[#57B492] text-white px-4 rounded-xl">Detail</Link>
+                                <Link href={`/main/penanaman/detail/${item.id}`} className="bg-[#57B492] text-white px-4 rounded-xl text-sm py-1">Detail</Link>
                             </div>
                         </div>
                     ))

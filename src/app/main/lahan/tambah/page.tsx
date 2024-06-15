@@ -39,6 +39,10 @@ export default function TambahLahan() {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        if (city) fetchCityCoordinates();
+    }, [city])
+
     const fetchData = async () => {
         const id_user = Cookies.get('id_user');
         const token = Cookies.get('token');
@@ -61,6 +65,20 @@ export default function TambahLahan() {
             }
         } catch (error) {
             console.error('Error fetching data:', error);
+        }
+    };
+
+    const fetchCityCoordinates = async () => {
+        try {
+            const response = await axios.get(`https://nominatim.openstreetmap.org/search?city=${city}&format=json&limit=1`);
+            if (response.data.length > 0) {
+                const { lat, lon } = response.data[0];
+                const newPos: [number, number] = [parseFloat(lat), parseFloat(lon)];
+                setLong(parseFloat(lon))
+                setLat(parseFloat(lat))
+            }
+        } catch (error) {
+            console.error('Error fetching city coordinates:', error);
         }
     };
 
@@ -141,7 +159,7 @@ export default function TambahLahan() {
                         </div>
                     </div>
                     <div className="pt-2">
-                        <CityMap city={city} longitude={setLong} latitude={setLat} />
+                        <CityMap city={city} longitude={setLong} latitude={setLat} dataLong={longitude} dataLat={latitude} />
                     </div>
                 </div>
                 <div className="flex gap-x-2">

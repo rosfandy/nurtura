@@ -14,6 +14,8 @@ interface CityMapProps {
     city: string;
     longitude: (long: number | null) => void;
     latitude: (lat: number | null) => void;
+    dataLong: any;
+    dataLat: any;
 }
 
 // Komponen helper untuk update map view
@@ -23,29 +25,17 @@ const ChangeView = ({ center, zoom }: { center: [number, number], zoom: number }
     return null;
 };
 
-const CityMap: React.FC<CityMapProps> = ({ city, longitude, latitude }) => {
+const CityMap: React.FC<CityMapProps> = ({ city, longitude, latitude, dataLong, dataLat }) => {
     const [position, setPosition] = useState<[number, number] | null>(null);
 
     useEffect(() => {
-        const fetchCityCoordinates = async () => {
-            try {
-                const response = await axios.get(`https://nominatim.openstreetmap.org/search?city=${city}&format=json&limit=1`);
-                if (response.data.length > 0) {
-                    const { lat, lon } = response.data[0];
-                    const newPos: [number, number] = [parseFloat(lat), parseFloat(lon)];
-                    setPosition(newPos);
-                    longitude(parseFloat(lon));
-                    latitude(parseFloat(lat));
-                }
-            } catch (error) {
-                console.error('Error fetching city coordinates:', error);
-            }
-        };
-
-        if (city) {
-            fetchCityCoordinates();
+        if (dataLat && dataLong) {
+            const newPos: [number, number] = [parseFloat(dataLat), parseFloat(dataLong)];
+            setPosition(newPos);
+            longitude(parseFloat(dataLat));
+            latitude(parseFloat(dataLong));
         }
-    }, [city]);
+    }, [dataLong, dataLat]);
 
     const handleDragEnd = (event: L.DragEndEvent) => {
         const marker = event.target;
@@ -72,7 +62,7 @@ const CityMap: React.FC<CityMapProps> = ({ city, longitude, latitude }) => {
                             dragend: handleDragEnd,
                         }}
                     >
-                        <Popup>{city}</Popup>
+                        {/* <Popup>{city}</Popup> */}
                     </Marker>
                 )}
             </MapContainer>
