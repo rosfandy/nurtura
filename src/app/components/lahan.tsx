@@ -4,11 +4,13 @@ import axios from "axios";
 import Leaflet from 'leaflet'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import Link from "next/link";
 
 type Position = [number, number] | null;
 
 export default function Lahan({ penanaman }: any) {
     const [position, setPosition] = useState<Position>(null);
+    const [id_lahan, setIdLahan] = useState(null)
     const markerIcon = Leaflet.divIcon({
         html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z" fill="#E82323"/></svg>`,
         iconSize: [24, 24],
@@ -31,6 +33,7 @@ export default function Lahan({ penanaman }: any) {
 
                 const penanamanData = await axios.get(`/api/penanaman/id/${penanaman}`, axiosConfig);
                 const id_lahan = penanamanData.data.data[0].id_lahan;
+                setIdLahan(id_lahan)
                 const lahanData = await axios.get(`/api/lahan/${id_lahan}`, axiosConfig);
                 setPosition([lahanData.data.data[0].latitude, lahanData.data.data[0].longitude]); // Use actual data
             } catch (error) {
@@ -46,8 +49,17 @@ export default function Lahan({ penanaman }: any) {
     return (
         <div className="">
             <div className="">
-                <div className="font-bold text-[#57B492]">Lokasi Lahan</div>
-                <div className="bg-white shadow rounded-md p-4 flex flex-wrap">
+                <div className="flex justify-between items-center">
+                    <div className="font-bold text-[#57B492] py-2">Lokasi Lahan</div>
+                    {
+                        position ? (
+                            <Link href={`/main/lahan/detail/${id_lahan}`} className="underline text-[#57B492] py-2">Lihat selengkapnya</Link>
+                        ) : (
+                            <div className=""></div>
+                        )
+                    }
+                </div>
+                <div className="bg-white shadow rounded-md p-4 flex flex-wrap mb-14">
                     <div className=" z-0" style={{ height: "40vh", width: "100%" }}>
                         {
                             position ? (
@@ -67,12 +79,6 @@ export default function Lahan({ penanaman }: any) {
                             )
                         }
                     </div>
-                </div>
-            </div>
-            <div className="">
-                <div className="font-bold text-[#57B492]">Informasi Lahan</div>
-                <div className="bg-white shadow rounded-md p-4 flex flex-wrap">
-                    Lahan
                 </div>
             </div>
         </div>

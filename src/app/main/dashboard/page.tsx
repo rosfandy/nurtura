@@ -71,29 +71,30 @@ export default function Dashboard() {
                 if (allSensor.status !== 200) {
                     console.log('Non-200 status:', allSensor.status, allSensor.data);
                     setError(`Received status ${allSensor.status}`);
-                    return;  // Handle non-200 statuses without throwing an error
+                } else {
+                    setSensorData(allSensor.data.data);
                 }
 
-                setSensorData(allSensor.data.data);
 
                 const latestSensor = await axios.get(`/api/sensor/latest/${id_user}`, axiosConfig);
                 if (latestSensor.status !== 200) {
                     console.log('Non-200 status:', latestSensor.status, latestSensor.data);
                     setError(`Received status ${latestSensor.status}`);
-                    return;  // Handle non-200 statuses without throwing an error
+                } else {
+                    console.log(latestSensor.data.data)
+                    setLatestSensor(latestSensor.data.data);
                 }
 
-                console.log(latestSensor.data.data)
-                setLatestSensor(latestSensor.data.data);
 
                 const penanaman = await axios.get(`/api/penanaman/${id_user}`, axiosConfig);
                 if (penanaman.status !== 200) {
                     console.log('Non-200 status:', penanaman.status, penanaman.data);
                     setError(`Received status ${penanaman.status}`);
-                    return;  // Handle non-200 statuses without throwing an error
+                } else {
+                    console.log(penanaman.data.data)
+                    setPenanamanData(penanaman.data.data);
                 }
 
-                setPenanamanData(penanaman.data.data);
 
             } catch (error: any) {
                 setError(error.message || 'An error occurred');
@@ -171,7 +172,7 @@ export default function Dashboard() {
                         <select className="w-[30%] p-1 rounded-md border border-slate-300 shadow-xs text-black" name="" id="" onChange={handlePenanamanChange}>
                             <option disabled selected >Pilih Penanaman</option>
                             {penanamanData && Object.keys(penanamanData).map(index => (
-                                <option key={index} className='text-black' value={penanamanData[0].id}>{penanamanData[0].nama_penanaman}</option>
+                                <option key={index} className='text-black' value={penanamanData[index].id}>{penanamanData[index].nama_penanaman}</option>
                             ))}
                         </select>
                         <button className="bg-[#57B492] w-[30%] rounded-md text-white">Pilih Tanggal</button>
