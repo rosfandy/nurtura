@@ -5,8 +5,11 @@ import Cookies from 'js-cookie';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation'; // This will be used for redirecting
-import MapComponent from '@/app/components/Map';
-import CityMap from '@/app/components/Map';
+import dynamic from 'next/dynamic';
+
+const CityMap = dynamic(() => import('@/app/components/Map'), {
+    ssr: false  // Disable server-side rendering for this component
+});
 
 interface DaftarLahan {
     id?: number;
