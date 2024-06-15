@@ -16,6 +16,11 @@ interface SensorData {
     kalium?: number;
 }
 
+interface Penanaman {
+    id: string; // or number, depending on your data structure
+    nama_penanaman: string;
+}
+
 interface ChartLabels {
     [key: string]: string;
 }
@@ -24,7 +29,7 @@ export default function Dashboard() {
     const didFetchData = useRef(false);
     const [sensorData, setSensorData] = useState(null);
     const [latestSensor, setLatestSensor] = useState<SensorData | null>(null);
-    const [penanamanData, setPenanamanData] = useState(null);
+    const [penanamanData, setPenanamanData] = useState<Penanaman[] | null>(null);
     const [error, setError] = useState('');
     const chartRefs = useRef<{ [key: string]: HTMLElement | null }>({});
     const [selectedPenanaman, setSelectedPenanaman] = useState(null);
@@ -52,7 +57,7 @@ export default function Dashboard() {
                 // Configure axios to handle 200, 400, and 404 as non-errors
                 const axiosConfig = {
                     headers: { 'Authorization': `Bearer ${token}` },
-                    validateStatus: function (status) {
+                    validateStatus: function (status: any) {
                         // Only reject with an error for server-side errors (status codes 500 and above)
                         return status < 500;
                     }
@@ -86,7 +91,7 @@ export default function Dashboard() {
 
                 setPenanamanData(penanaman.data.data);
 
-            } catch (error) {
+            } catch (error: any) {
                 setError(error.message || 'An error occurred');
             }
 
@@ -192,9 +197,11 @@ export default function Dashboard() {
                     <div className="bg-white shadow rounded-md p-4 flex flex-wrap">
                         {
                             sensorData && Object.keys(sensorData[0]).length > 0 ? (
-                                Object.keys(sensorData[0]).map(index => (
+                                Object.keys(sensorData[0]).map((key, index) => (
                                     <div key={index} className="max-w-[50%]">
-                                        <div ref={el => chartRefs.current[index] = el}></div>
+                                        <div ref={el => {
+                                            if (el) chartRefs.current[key] = el;
+                                        }}></div>
                                     </div>
                                 ))
                             ) : (
@@ -239,7 +246,7 @@ export default function Dashboard() {
                     </div>
                 </div>
                 {
-                    penanamanData && Object.keys(sensorData[0]).length > 0 ? (
+                    penanamanData && Object.keys(penanamanData[0]).length > 0 ? (
                         <Lahan penanaman={selectedPenanaman} />
                     ) : (
                         <div className="text-center text-sm font-medium text-gray-500">

@@ -5,15 +5,17 @@ import ApexCharts from 'apexcharts';
 
 interface SensorDataPoint {
     value: number;
-    timestamp: string;
+    timestamp_pengukuran: string;
 }
 
 interface SensorData {
     [key: string]: SensorDataPoint[];
 }
 
-export default function Graph({ penanaman, type_sensor }) {
-    const [filterSensor, setFilterSensor] = useState([]);
+export default function Graph(param: any) {
+    const { penanaman, type_sensor } = param;
+
+    const [filterSensor, setFilterSensor] = useState<SensorDataPoint[]>([]);
     const chartRef = useRef(null);
     const chart = useRef<ApexCharts | null>(null);
 
@@ -48,7 +50,7 @@ export default function Graph({ penanaman, type_sensor }) {
         if (filterSensor && filterSensor.length > 0 && type_sensor != null) {
             const seriesData = filterSensor.map(sensor => ({
                 x: new Date(sensor.timestamp_pengukuran).getTime(),
-                y: sensor[type_sensor]
+                y: sensor[type_sensor as keyof SensorDataPoint]  // Assert that type_sensor is a valid key of SensorDataPoint
             }));
 
             const options = {
