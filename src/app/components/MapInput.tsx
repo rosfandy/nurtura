@@ -35,8 +35,8 @@ const CityMap: React.FC<CityMapProps> = ({ city, longitude, latitude }) => {
                         const { lat, lon } = response.data[0];
                         const newPos: [number, number] = [parseFloat(lat), parseFloat(lon)];
                         setPosition(newPos);
-                        longitude(parseFloat(lat));
-                        latitude(parseFloat(lon));
+                        longitude(parseFloat(lon));
+                        latitude(parseFloat(lat));
                     }
                 } catch (error) {
                     console.error('Error fetching city coordinates:', error);

@@ -83,20 +83,8 @@ export default function LahanDetail() {
                         <div className="">
                             {/* MAPS WITH INPUT KOTA */}
                             <div>Maps</div>
-                            <div className="border-slate-300 border w-full flex items-center justify-between rounded-md">
-                                <input
-                                    type="text"
-                                    value={inputCity}
-                                    className='w-2/3 px-4 py-1 rounded-md focus:outline-none '
-                                    onChange={(e) => setInputCity(e.target.value)}
-                                    placeholder="Enter city name"
-                                />
-                                <div className="w-1/3 flex justify-end">
-                                    <button className='rounded-md w-3/4 py-1 text-white text-sm bg-[#57B492]' onClick={handleCitySubmit} type="submit">Search</button>
-                                </div>
-                            </div>
                             <div className="pt-2">
-                                <CityMap city={city} longitude={setLong} latitude={setLat} dataLong={dataLahan.longitude} dataLat={dataLahan.latitude} />
+                                <CityMap city={dataLahan.nama_lahan ?? ''} longitude={setLong} latitude={setLat} dataLong={dataLahan.longitude} dataLat={dataLahan.latitude} />
                             </div>
                         </div>
                         <div className="flex gap-x-2">

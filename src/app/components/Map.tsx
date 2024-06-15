@@ -62,7 +62,7 @@ const CityMap: React.FC<CityMapProps> = ({ city, longitude, latitude, dataLong, 
                             dragend: handleDragEnd,
                         }}
                     >
-                        {/* <Popup>{city}</Popup> */}
+                        <Popup>{city}</Popup>
                     </Marker>
                 )}
             </MapContainer>

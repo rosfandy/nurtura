@@ -78,7 +78,8 @@ export default function TambahLahan() {
         const updatedFormData = {
             ...formData,
             longitude: longitude || 0,
-            latitude: latitude || 0
+            latitude: latitude || 0,
+            id_user: Cookies.get('id_user')
         };
         console.log(updatedFormData);
 
