@@ -6,6 +6,7 @@ import { redirect, useRouter } from 'next/navigation';
 export default function LoginForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const router = useRouter(); // Import useRouter jika belum
 
     const handleLogin = async (event: any) => {
         event.preventDefault(); // Mencegah reload halaman
@@ -17,7 +18,8 @@ export default function LoginForm() {
 
             if (response.data.success) {
                 console.log(response.data.token);
-                redirect('/main/dashboard');
+                router.refresh(); // dirty fix, but it works
+                router.push('/main/dashboard');
             } else {
                 // Handle jika login tidak berhasil
                 console.log('Login gagal:', response.data.message);
