@@ -1,7 +1,7 @@
 import BottomBar from "../components/Bottombar";
 import Navbar from "../components/Navbar";
 
-const MainLayout = ({ children }) => {
+const MainLayout = ({ children }: any) => {
     return (
         <div className="bg-[#57B492] min-h-screen text-black">
             <div className="md:px-[76vh]">
