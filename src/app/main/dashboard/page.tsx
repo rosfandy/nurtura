@@ -2,9 +2,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Cookies from 'js-cookie';
 import axios from 'axios';
-import ApexCharts from 'apexcharts';
-import Graph from './graph';
-import Lahan from './lahan';
+import dynamic from "next/dynamic";
+import RadialBarChart from '@/app/components/RadialBar';
+
+const Graph = dynamic(() => import('@/app/components/graph'), { ssr: false });
+const Lahan = dynamic(() => import('@/app/components/lahan'), { ssr: false });
+const ApexCharts = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 interface SensorData {
     suhu?: number;
@@ -28,6 +31,7 @@ interface ChartLabels {
 export default function Dashboard() {
     const didFetchData = useRef(false);
     const [sensorData, setSensorData] = useState(null);
+    const [option, setOption] = useState(null);
     const [latestSensor, setLatestSensor] = useState<SensorData | null>(null);
     const [penanamanData, setPenanamanData] = useState<Penanaman[] | null>(null);
     const [error, setError] = useState('');
@@ -103,63 +107,6 @@ export default function Dashboard() {
         }
     }, []);
 
-    useEffect(() => {
-        if (latestSensor) {
-            const sensorKeys: (keyof SensorData)[] = ['suhu', 'kelembapan_udara', 'kelembapan_tanah', 'ph_tanah', 'nitrogen', 'fosfor', 'kalium'];
-            const labels: ChartLabels = {
-                suhu: 'Suhu',
-                kelembapan_udara: 'Kelembapan Udara',
-                kelembapan_tanah: 'Kelembapan Tanah',
-                ph_tanah: 'pH Tanah',
-                nitrogen: 'Nitrogen',
-                fosfor: 'Fosfor',
-                kalium: 'Kalium'
-            };
-
-            sensorKeys.forEach((key) => {
-                const value = latestSensor[key];
-                if (value !== undefined && chartRefs.current[key]) {
-                    const options = {
-                        series: [value],
-                        chart: {
-                            height: 120,
-                            type: 'radialBar',
-                        },
-                        plotOptions: {
-                            radialBar: {
-                                hollow: {
-                                    size: '50%',
-                                },
-                                dataLabels: {
-                                    name: {
-                                        fontSize: '12px',
-                                        color: '#000',
-                                        offsetY: 47,
-                                    },
-                                    value: {
-                                        fontSize: '16px',
-                                        offsetY: -10,
-                                        fontWeight: 'bold',
-                                        show: true,
-                                        formatter: function (val: number): string {
-                                            return val.toString(); // This will display just the numeric value
-                                        }
-                                    },
-                                },
-
-                            },
-                        },
-                        colors: ['#57B492'], // Specify the color here
-                        labels: [labels[key]],
-                    };
-
-                    const chart = new ApexCharts(chartRefs.current[key], options);
-                    chart.render();
-                }
-            });
-        }
-    }, [latestSensor]);
-
     return (
         <div className="bg-[#F1F5F9] min-h-screen text-black">
             <div className="p-4 flex flex-col gap-y-4">
@@ -195,21 +142,17 @@ export default function Dashboard() {
                 <div className="flex flex-col gap-y-2">
                     <div className="font-bold text-[#57B492]">Data Sensor Terkini</div>
                     <div className="bg-white shadow rounded-md p-4 flex flex-wrap">
-                        {
-                            sensorData && Object.keys(sensorData[0]).length > 0 ? (
-                                Object.keys(sensorData[0]).map((key, index) => (
-                                    <div key={index} className="max-w-[50%]">
-                                        <div ref={el => {
-                                            if (el) chartRefs.current[key] = el;
-                                        }}></div>
+                        <div className="">
+                            {
+                                latestSensor && Object.keys(latestSensor).length > 0 ? (
+                                    <RadialBarChart data={latestSensor} />
+                                ) : (
+                                    <div className="text-center text-sm font-medium text-gray-500">
+                                        Tidak ada data
                                     </div>
-                                ))
-                            ) : (
-                                <div className="text-center text-sm font-medium text-gray-500">
-                                    Tidak ada data
-                                </div>
-                            )
-                        }
+                                )
+                            }
+                        </div>
                     </div>
                 </div>
                 <div className="flex flex-col gap-y-2">
