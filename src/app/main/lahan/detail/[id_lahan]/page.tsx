@@ -67,7 +67,7 @@ export default function LahanDetail() {
     return (
         <div className="bg-[#F1F5F9] min-h-screen p-4">
             <div className="font-bold text-[#57B492] py-2">Informasi Lahan</div>
-            <div className="bg-white p-4 flex flex-col gap-y-6">
+            <div className="bg-white p-4 flex flex-col gap-y-6 mb-12">
                 {dataLahan ? (
                     <>
                         <div className="flex flex-col gap-y-2">
