@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { redirect, useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import Link from 'next/link';
 
 export default function LoginForm() {
     const [email, setEmail] = useState('');
@@ -16,8 +18,8 @@ export default function LoginForm() {
                 password
             });
 
-            if (response.data.success) {
-                console.log(response.data.token);
+            if (response.status === 200) {
+                toast.success('Login berhasil !');
                 router.refresh(); // dirty fix, but it works
                 router.push('/main/dashboard');
             } else {
@@ -44,7 +46,7 @@ export default function LoginForm() {
                             <input className="text-black border border-[#E8ECF4] w-full rounded-md px-4 py-2" placeholder="password" type="password" name="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                         </div>
                         <div className="flex justify-between py-4">
-                            <span className="cursor-pointer text-black/50 text-xs font-semibold">Belum memiliki akun?</span>
+                            <Link href={'/auth/register'} className="cursor-pointer text-black/50 text-xs font-semibold">Belum memiliki akun?</Link>
                             <span className="cursor-pointer text-black/50 text-xs font-semibold">Lupa kata sandi?</span>
                         </div>
                         <button type="submit" className="bg-[#57B492] rounded-md text-white p-2">Login</button>

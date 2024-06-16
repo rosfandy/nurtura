@@ -1,10 +1,11 @@
 'use client'
 import LoginForm from "@/app/components/Form/LoginForm"
 import { AuthProvider } from "../AuthContext"
+import RegisForm from "@/app/components/Form/RegisForm"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function login() {
+export default function Register() {
     return (
         <div className='min-h-screen bg-[#57B492] '>
             <ToastContainer />
@@ -19,7 +20,7 @@ export default function login() {
                             <span className='text-[#002623] '>Grow</span>
                         </div>
                     </div>
-                    <LoginForm />
+                    <RegisForm />
                 </div>
             </div>
         </div>
