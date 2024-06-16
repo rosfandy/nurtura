@@ -92,7 +92,15 @@ export default function Deteksi() {
             const response = await axios.get(`/api/tanaman/${SelectedPenanaman}/${Tanaman}`, axiosConfig);
             if (response.status === 200) {
                 setIsLoading(false)
-                console.log(response.data.data)
+                console.log('index: ', response.data.data);
+                const latestData: { [key: number]: any } = {};
+                response.data.data.forEach((plant: any) => {
+                    // Menyimpan atau memperbarui data berdasarkan id_plant
+                    if (!latestData[plant.id_plant] || (latestData[plant.id_plant].updated_at < plant.updated_at)) {
+                        latestData[plant.id_plant] = plant;
+                    }
+                });
+                console.log('Latest data based on id_plant:', latestData);
                 setPlantData(response.data.data);
             } else {
                 console.log('Failed to fetch data:', response.status, response.data);

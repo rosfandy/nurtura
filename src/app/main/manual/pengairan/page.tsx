@@ -14,7 +14,7 @@ interface DaftarPenanaman {
 }
 
 export default function ManualPengairan() {
-    const [DaftarPenanaman, setDaftarPenanaman] = useState<DaftarPenanaman[] | null>(null);
+    const [DaftarPenanaman, setDaftarPenanaman] = useState<DaftarPenanaman[]>([]);
     const [id_penanaman, setIdPenanaman] = useState(0)
     const [selected, setSelected] = useState('ideal');
 
