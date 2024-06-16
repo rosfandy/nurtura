@@ -5,6 +5,8 @@ import Cookies from 'js-cookie';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation'; // This will be used for redirecting
+import AksiPengairan from './sub_page/aksi';
+import SopPengairan from './sub_page/sop';
 
 interface DaftarPenanaman {
     id?: number;
@@ -13,6 +15,13 @@ interface DaftarPenanaman {
 
 export default function ManualPengairan() {
     const [DaftarPenanaman, setDaftarPenanaman] = useState<DaftarPenanaman[] | null>(null);
+    const [id_penanaman, setIdPenanaman] = useState(0)
+    const [selected, setSelected] = useState('ideal');
+
+    const handleClick = (option: any) => {
+        setSelected(option);
+    };
+
     const [formData, setFormData] = useState({
         id_penanaman: 0,
         tanggal_pencatatan: '',
@@ -54,7 +63,37 @@ export default function ManualPengairan() {
     return (
         <div className="bg-[#F1F5F9] min-h-screen text-black py-4 px-8 mb-12">
             <div className="font-bold text-[#57B492] py-2">Manual Pengairan</div>
+            <div className="flex w-full bg-white">
+                <div
+                    className={`cursor-pointer w-1/2 text-center px-2 py-1 text-sm rounded-md ${selected === 'ideal' ? 'text-white bg-[#57B492]' : ''
+                        }`}
+                    onClick={() => handleClick('ideal')}
+                >
+                    Ideal Pengairan
+                </div>
+                <div
+                    className={`cursor-pointer w-1/2 text-center px-2 py-1 text-sm rounded-md ${selected === 'aksi' ? 'text-white bg-[#57B492]' : ''
+                        }`}
+                    onClick={() => handleClick('aksi')}
+                >
+                    Aksi Pengairan
+                </div>
+            </div>
 
+            {DaftarPenanaman ? (
+                selected == 'ideal' ? (
+                    <div className="">
+                        <SopPengairan penanaman={DaftarPenanaman} setIdPenanaman={setIdPenanaman} />
+                    </div>
+                ) : (
+                    <div className="">
+                        <AksiPengairan id_penanaman={id_penanaman} />
+                    </div>
+                )
+            ) : (
+                <div className="">Tidak ada data</div>
+            )
+            }
         </div>
     )
 }
