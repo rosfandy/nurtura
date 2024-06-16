@@ -41,13 +41,13 @@ const RadialBarChart = ({ data }: { data: SensorData }) => {
                     plotOptions: {
                         radialBar: {
                             hollow: {
-                                size: '40%',
+                                size: '50%',
                             },
                             dataLabels: {
                                 name: {
-                                    fontSize: '12px',
+                                    fontSize: '13px',
                                     color: '#000',
-                                    offsetY: 67,
+                                    offsetY: 50,
                                 },
                                 value: {
                                     fontSize: '16px',
@@ -66,7 +66,7 @@ const RadialBarChart = ({ data }: { data: SensorData }) => {
                 };
 
                 return (
-                    <div key={index} className="w-1/2 p-2">
+                    <div key={index} className="w-1/2 ">
                         <ApexChart
                             type="radialBar"
                             series={[sensor.value]}

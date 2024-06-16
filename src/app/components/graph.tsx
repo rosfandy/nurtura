@@ -1,7 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import axios from "axios";
-import ApexCharts from 'apexcharts';
+import dynamic from 'next/dynamic';
+import { format, addHours } from 'date-fns'; // Import addHours
+
+const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 interface SensorDataPoint {
     value: number;
@@ -16,8 +19,8 @@ export default function Graph(param: any) {
     const { penanaman, type_sensor } = param;
 
     const [filterSensor, setFilterSensor] = useState<SensorDataPoint[]>([]);
-    const chartRef = useRef(null);
-    const chart = useRef<ApexCharts | null>(null);
+    const [options, setOptions] = useState<any>({});
+    const [series, setSeries] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -35,7 +38,12 @@ export default function Graph(param: any) {
                 };
 
                 const res = await axios.get(`/api/sensor/filter/${penanaman}/sensor`, axiosConfig);
-                setFilterSensor(res.data.data);
+                if (Array.isArray(res.data.data)) {
+                    setFilterSensor(res.data.data);
+                } else {
+                    console.error('Expected an array but received:', res.data.data);
+                    setFilterSensor([]); // Set an empty array if data is not as expected
+                }
             } catch (error) {
                 console.log('Error fetching sensor data:', error);
             }
@@ -47,13 +55,14 @@ export default function Graph(param: any) {
     }, [penanaman]);
 
     useEffect(() => {
-        if (filterSensor && filterSensor.length > 0 && type_sensor != null) {
+        if (filterSensor && Array.isArray(filterSensor) && filterSensor.length > 0 && type_sensor != null) {
+
             const seriesData = filterSensor.map(sensor => ({
-                x: new Date(sensor.timestamp_pengukuran).getTime(),
-                y: sensor[type_sensor as keyof SensorDataPoint]  // Assert that type_sensor is a valid key of SensorDataPoint
+                x: format(addHours(new Date(sensor.timestamp_pengukuran), 7), 'dd MMM yyyy HH:mm:ss'), // Adjust to GMT+7
+                y: sensor[type_sensor as keyof SensorDataPoint]  // Ensure type_sensor is valid
             }));
 
-            const options = {
+            setOptions({
                 chart: {
                     type: 'line',
                     height: 350,
@@ -62,45 +71,33 @@ export default function Graph(param: any) {
                         type: 'x'
                     }
                 },
-                series: [{
-                    name: type_sensor,
-                    data: seriesData
-                }],
                 xaxis: {
-                    type: 'datetime'
+                    type: 'datetime',
+                    labels: {
+                        format: 'dd MMM yy HH:mm' // Set format for x-axis labels
+                    }
                 },
                 tooltip: {
                     x: {
-                        format: 'dd MMM yyyy HH:mm'
+                        format: 'dd MMM yyyy HH:mm:ss' // Set format for tooltip
                     }
                 }
-            };
+            });
 
-            // Initialize chart if not already created, or update it
-            if (chart.current) {
-                chart.current.updateOptions(options);
-            } else {
-                chart.current = new ApexCharts(chartRef.current, options);
-                chart.current.render();
-            }
+            setSeries([{
+                name: type_sensor,
+                data: seriesData
+            }]);
         }
-
-        // Cleanup function to destroy chart
-        return () => {
-            if (chart.current) {
-                chart.current.destroy();
-                chart.current = null;
-            }
-        };
     }, [filterSensor, type_sensor]);
 
     return (
         <div>
             <h2>Current Sensor Type: {type_sensor}</h2>
             {filterSensor.length > 0 ? (
-                <div ref={chartRef}></div>
+                <ApexCharts options={options} series={series} type="line" height={350} width={"100%"} />
             ) : (
-                <p> Pilih penanaman</p>
+                <p>Pilih penanaman</p>
             )}
         </div>
     );
